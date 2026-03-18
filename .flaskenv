@@ -1,0 +1,2 @@
+FLASK_APP=atemeQuizGame.py
+FLASK_DEBUG=1

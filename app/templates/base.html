@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ateme Quiz</title>
+    </head>
+    <body> 
+        <div>Ateme Quiz: <a href="{{ url_for('main.index')}}">Home</a></div>
+        <div>Ateme Quiz: <a href="{{ url_for('main.login') }}">Login</a></div>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>

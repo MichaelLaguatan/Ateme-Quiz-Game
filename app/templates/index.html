@@ -1,20 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Test 1</h1>
-    <form method="POST">
-        {% for q in form.questions %}
-            <div class="question-block">
-                <p>{{ (q.form.question_text.label|string)[10:] }}</p>
-                {{ q.form.question_number }}
-                {% for subfield in q.form.options %}
-                    <label>
-                        {{ subfield }}
-                        {{ subfield.label.text }}
-                    </label><br>
-                {% endfor %}
-            </div>
-        {% endfor %}
-        <button type="submit">Submit</button>
+    <h1>Enter Name</h1>
+    <form action="" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}
+            {% for error in form.username.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.submit() }}
+        </p>
     </form>
 {% endblock %}

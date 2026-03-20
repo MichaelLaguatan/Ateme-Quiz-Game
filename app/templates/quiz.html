@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Test 1</h1>
+    <form method="POST">
+        {% for q in form.questions %}
+            <div class="question-block">
+                <p>{{ (q.form.question_text.label|string)[10:] }}</p>
+                {{ q.form.question_number }}
+                {% for subfield in q.form.options %}
+                    <label>
+                        {{ subfield }}
+                        {{ subfield.label.text }}
+                    </label><br>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}

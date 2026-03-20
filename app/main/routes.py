@@ -10,38 +10,41 @@ import logging
 @bp.route('/', methods=["GET", "POST"])
 @bp.route('/index', methods=["GET", "POST"])
 def index():
-    form = QuizForm()
-    db_questions = db.session.scalars(sa.select(Questions)).all()
-    if form.is_submitted():
-      correct = 0
-      for question_form in form.questions:
-        selected_answer = question_form.options.data
-        if selected_answer == db_questions[int(question_form.question_number.data)].correct_option:
-          correct += 1
-      return redirect(url_for('main.results', correct=correct, num_questions=len(db_questions)))
-    quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
-    for q in quiz_data:
-      form.questions.append_entry()
-    for i, q in enumerate(quiz_data):
-      question_form = form.questions[i].form
-      question_form.question_number.data = i
-      question_form.question_text.label = q["question"]
-      question_form.options.choices = q["choices"]
-    return render_template('index.html', title='Questions', form=form)
+  form = RegistrationForm()
+  if form.validate_on_submit():
+      user = User(username=form.username.data, score=0)
+      db.session.add(user)
+      db.session.commit()
+      return redirect(url_for('main.quiz', username=user.username))
+  return render_template('index.html', title='Enter Name', form=form)
 
-@bp.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
+@bp.route('/quiz/<username>', methods=["GET", "POST"])
+def quiz(username):
+  form = QuizForm()
+  db_questions = db.session.scalars(sa.select(Questions)).all()
+  if form.is_submitted():
+    correct = 0
+    for question_form in form.questions:
+      selected_answer = question_form.options.data
+      if selected_answer == db_questions[int(question_form.question_number.data)].correct_option:
+        correct += 1
+    return redirect(url_for('main.results', correct=correct, num_questions=len(db_questions), username=username))
+  quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
+  for q in quiz_data:
+    form.questions.append_entry()
+  for i, q in enumerate(quiz_data):
+    question_form = form.questions[i].form
+    question_form.question_number.data = i
+    question_form.question_text.label = q["question"]
+    question_form.options.choices = q["choices"]
+  return render_template('quiz.html', title='Questions', form=form)
 
-    if form.validate_on_submit():
-        user = User(username=form.username.data)
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('main.index'))
-    return render_template('register.html', title='Enter Name', form=form)
-
-@bp.route('/results/<correct>/<num_questions>')
-def results(correct, num_questions):
+@bp.route('/results/<correct>/<num_questions>/<username>')
+def results(correct, num_questions, username):
+  user = db.session.scalar(sa.select(User).where(User.username == username))
+  user.score = correct
+  db.session.add(user)
+  db.session.commit()
   return render_template('results.html', title='Results', correct=correct, num_questions=num_questions)
 
 @bp.route('/read_csv')
@@ -58,3 +61,10 @@ def read_csv():
     for question in questions:
         print(question)
     return questions
+
+@bp.route('/clear_db', methods=["POST"])
+def clear_db():
+  db.drop_all()
+  db.create_all()
+  db.session.commit()
+  return '', 204

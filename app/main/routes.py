@@ -19,7 +19,7 @@ def index():
       question_form = form.questions[i].form
       question_form.question_text.label = q["question"]
       question_form.options.choices = q["choices"]
-    return render_template('index.html', title='Questions', db_questions=db_questions, form=form)
+    return render_template('index.html', title='Questions', form=form)
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():

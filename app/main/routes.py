@@ -13,15 +13,12 @@ def index():
     form = QuizForm()
     db_questions = db.session.scalars(sa.select(Questions)).all()
     if form.is_submitted():
+      correct = 0
       for question_form in form.questions:
         selected_answer = question_form.options.data
-        logging.warning(selected_answer)
-        logging.warning(db_questions[int(question_form.question_number.data)].correct_option)
         if selected_answer == db_questions[int(question_form.question_number.data)].correct_option:
-          logging.warning("CORRECT")
-        else:
-          logging.warning("INCORRECT")
-      return redirect(url_for('main.index'))
+          correct += 1
+      return redirect(url_for('main.results', correct=correct, num_questions=len(db_questions)))
     quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
     for q in quiz_data:
       form.questions.append_entry()
@@ -43,6 +40,9 @@ def register():
         return redirect(url_for('main.index'))
     return render_template('register.html', title='Enter Name', form=form)
 
+@bp.route('/results/<correct>/<num_questions>')
+def results(correct, num_questions):
+  return render_template('results.html', title='Results', correct=correct, num_questions=num_questions)
 
 @bp.route('/read_csv')
 def read_csv():

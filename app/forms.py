@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, SubmitField, FormField, FieldList
+from wtforms import StringField, RadioField, SubmitField, FormField, FieldList, HiddenField
 from wtforms.validators import DataRequired
 
 
@@ -8,6 +8,7 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class QuestionForm(FlaskForm):
+    question_number = HiddenField()
     question_text = StringField()
     options = RadioField()
 

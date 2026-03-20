@@ -1,22 +1,33 @@
 from app.main import bp
-from flask import render_template, flash, redirect, url_for
-from app.forms import RegistrationForm, QuestionForm, QuizForm
+from flask import render_template, flash, redirect, url_for, request
+from app.forms import RegistrationForm, QuizForm
 from app.models import User, Questions
 from app import db
 import csv
 import sqlalchemy as sa
 import logging
 
-@bp.route('/')
-@bp.route('/index')
+@bp.route('/', methods=["GET", "POST"])
+@bp.route('/index', methods=["GET", "POST"])
 def index():
     form = QuizForm()
     db_questions = db.session.scalars(sa.select(Questions)).all()
+    if form.is_submitted():
+      for question_form in form.questions:
+        selected_answer = question_form.options.data
+        logging.warning(selected_answer)
+        logging.warning(db_questions[int(question_form.question_number.data)].correct_option)
+        if selected_answer == db_questions[int(question_form.question_number.data)].correct_option:
+          logging.warning("CORRECT")
+        else:
+          logging.warning("INCORRECT")
+      return redirect(url_for('main.index'))
     quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
     for q in quiz_data:
       form.questions.append_entry()
     for i, q in enumerate(quiz_data):
       question_form = form.questions[i].form
+      question_form.question_number.data = i
       question_form.question_text.label = q["question"]
       question_form.options.choices = q["choices"]
     return render_template('index.html', title='Questions', form=form)

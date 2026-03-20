@@ -2,4 +2,27 @@
 
 {% block content %}
     <h1>Test 1</h1>
+    {% for question in db_questions %}
+      {{question.question}}<br>
+      {{question.option1}}<br>
+      {{question.option2}}<br>
+      {{question.option3}}<br>
+      {{question.option4}}<br>
+    {% endfor %}
+<form method="POST">
+    {% for q in form.questions %}
+        <div class="question-block">
+            <p>{{ q.form.question_text.label }}</p>
+
+            {% for subfield in q.form.options %}
+                <label>
+                    {{ subfield }}
+                    {{ subfield.label.text }}
+                </label><br>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    <button type="submit">Submit</button>
+</form>
 {% endblock %}

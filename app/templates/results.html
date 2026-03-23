@@ -2,6 +2,6 @@
 
 {% block content %}
   <h1>RESULTS</h1>
-  You got {{ correct }} out of {{ num_questions }}
+  You got {{ correct }} out of {{ num_questions }} in {{ time_taken }} seconds
   <a class="button" href="{{ url_for ('main.index') }}">Back</a>
 {% endblock %}

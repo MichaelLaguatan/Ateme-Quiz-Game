@@ -1,34 +1,29 @@
 from app.main import bp
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, request, redirect, url_for, session
 from app.forms import RegistrationForm, QuizForm
 from app.models import User, Questions
 from app import db
 import csv
 import sqlalchemy as sa
 import logging
+from datetime import datetime, timedelta
 
 @bp.route('/', methods=["GET", "POST"])
 @bp.route('/index', methods=["GET", "POST"])
 def index():
   form = RegistrationForm()
   if form.validate_on_submit():
-      user = User(username=form.username.data, score=0)
+      user = User(username=form.username.data, score=0, time_taken=0)
       db.session.add(user)
       db.session.commit()
       return redirect(url_for('main.quiz', username=user.username))
   return render_template('index.html', title='Enter Name', form=form)
 
-@bp.route('/quiz/<username>', methods=["GET", "POST"])
+@bp.route('/quiz/<username>')
 def quiz(username):
+  session['start_time'] = datetime.now()
   form = QuizForm()
   db_questions = db.session.scalars(sa.select(Questions)).all()
-  if form.is_submitted():
-    correct = 0
-    for question_form in form.questions:
-      selected_answer = question_form.options.data
-      if selected_answer == db_questions[int(question_form.question_number.data)].correct_option:
-        correct += 1
-    return redirect(url_for('main.results', correct=correct, num_questions=len(db_questions), username=username))
   quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
   for q in quiz_data:
     form.questions.append_entry()
@@ -37,15 +32,26 @@ def quiz(username):
     question_form.question_number.data = i
     question_form.question_text.label = q["question"]
     question_form.options.choices = q["choices"]
-  return render_template('quiz.html', title='Questions', form=form)
+  return render_template('quiz.html', title='Questions', form=form, username=username)
 
-@bp.route('/results/<correct>/<num_questions>/<username>')
-def results(correct, num_questions, username):
+@bp.route('/results/<username>', methods=["GET", "POST"])
+def results(username):
   user = db.session.scalar(sa.select(User).where(User.username == username))
+  db_questions = db.session.scalars(sa.select(Questions)).all()
+  correct = 0
+  results = []
+  for key, value in request.form.items():
+    if key.endswith("-question_number") or key == "time_taken":
+       continue
+    results.append(value)
+  for index, value in enumerate(results):
+     if value == db_questions[int(index)].correct_option:
+        correct += 1
   user.score = correct
+  user.time_taken = request.form.get("time_taken")
   db.session.add(user)
   db.session.commit()
-  return render_template('results.html', title='Results', correct=correct, num_questions=num_questions)
+  return render_template('results.html', title='Results', correct=correct, num_questions=len(db_questions), time_taken=user.time_taken)
 
 @bp.route('/leaderboard')
 def leaderboard():

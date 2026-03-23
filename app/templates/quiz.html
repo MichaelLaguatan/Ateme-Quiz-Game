@@ -1,8 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script>
+let startTime = Date.now();
+
+function submitQuiz() {
+    let endTime = Date.now();
+    let elapsedTime = (endTime - startTime) / 1000;
+
+    // store in hidden input
+    document.getElementById("time_taken").value = elapsedTime;
+
+    document.getElementById("quizForm").submit();
+}
+</script>
+
   <h1>Test 1</h1>
-    <form method="POST">
+    <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username) }}">
         {% for q in form.questions %}
             <div class="question-block">
                 <p>{{ (q.form.question_text.label|string)[10:] }}</p>
@@ -15,6 +29,7 @@
                 {% endfor %}
             </div>
         {% endfor %}
-        <button type="submit">Submit</button>
+    <input type="hidden" name="time_taken" id="time_taken">
+    <button type="button" onclick="submitQuiz()">Submit</button>
     </form>
 {% endblock %}

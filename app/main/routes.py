@@ -21,7 +21,6 @@ def index():
 
 @bp.route('/quiz/<username>')
 def quiz(username):
-  session['start_time'] = datetime.now()
   form = QuizForm()
   db_questions = db.session.scalars(sa.select(Questions)).all()
   quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]

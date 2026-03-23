@@ -1,18 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Enter Name</h1>
-    <form action="" method="POST" novalidate>
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="text-center">
+        <h1 class="mb-4">Ateme Quiz Game</h1>
+
+        <form action="" method="POST" novalidate>
         {{ form.hidden_tag() }}
         <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}
+            {{ form.username.label}}<br>
+            {{ form.username(size=32, class_="form_control") }}
             {% for error in form.username.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.submit() }}
+            {{ form.submit(class_="btn custom-btn") }}
         </p>
+        
     </form>
+    </div>
+</div>
 {% endblock %}

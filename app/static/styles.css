@@ -1,0 +1,20 @@
+.custom-btn {
+    background-color: #2CA95B;
+    color: white;
+    border: none;
+}
+
+.custom-btn:hover {
+    background-color: #2CA95B;
+    filter: brightness(85%);
+    color: white;
+}
+
+.question-block p {
+    margin: 0;
+}
+
+thead {
+    --bs-table-bg: #2CA95B;
+    color: white;
+}

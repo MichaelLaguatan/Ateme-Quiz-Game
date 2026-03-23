@@ -29,23 +29,27 @@ function submitQuiz() {
     document.getElementById("quizForm").submit();
 }
 </script>
-
-  <h1>Test 1</h1>
-  <p>Time: <span id="timer">0:00</span></p>
-    <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username) }}">
-        {% for q in form.questions %}
-            <div class="question-block">
-                <p>{{ (q.form.question_text.label|string)[10:] }}</p>
-                {{ q.form.question_number }}
-                {% for subfield in q.form.options %}
-                    <label>
-                        {{ subfield }}
-                        {{ subfield.label.text }}
-                    </label><br>
-                {% endfor %}
-            </div>
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="text-center">
+        <h1>Start!</h1>
+        <p>Time: <span id="timer">0:00</span></p>
+        <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username) }}">
+            {% for q in form.questions %}
+                <div class="question-block">
+                    <p>{{ (q.form.question_text.label|string)[10:] }} {{ q.form.question_number }}</p>
+                    
+                    {% for subfield in q.form.options %}
+                        <label>
+                            {{ subfield }}
+                            {{ subfield.label.text }}
+                        </label><br>
+                    {% endfor %}
+                </div>
         {% endfor %}
-    <input type="hidden" name="time_taken" id="time_taken">
-    <button type="button" onclick="submitQuiz()">Submit</button>
+    <input type="hidden" name="time_taken" id="time_taken"><br>
+    <button class="btn custom-btn"type="button" onclick="submitQuiz()">Submit</button>
     </form>
+    </div>
+</div>
+ 
 {% endblock %}

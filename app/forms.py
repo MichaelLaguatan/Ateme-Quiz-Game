@@ -4,8 +4,8 @@ from wtforms.validators import DataRequired
 
 
 class RegistrationForm(FlaskForm):
-    username=StringField('Username (First and Last)', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    username=StringField('Name (First and Last)', validators=[DataRequired()])
+    submit = SubmitField('Start Quiz!')
 
 class QuestionForm(FlaskForm):
     question_number = HiddenField()

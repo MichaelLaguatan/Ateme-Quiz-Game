@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Leaderboard</h1>
+    {% for user in users %}
+      Name: {{user.username}}, score: {{user.score}}<br>
+    {% endfor %}
+{% endblock %}

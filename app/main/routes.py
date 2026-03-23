@@ -47,6 +47,11 @@ def results(correct, num_questions, username):
   db.session.commit()
   return render_template('results.html', title='Results', correct=correct, num_questions=num_questions)
 
+@bp.route('/leaderboard')
+def leaderboard():
+   users = db.session.scalars(sa.select(User)).all()
+   return render_template('leaderboard.html', title='Leaderboard', users=users)
+
 @bp.route('/read_csv')
 def read_csv():
     questions = []

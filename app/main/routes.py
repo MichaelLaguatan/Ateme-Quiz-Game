@@ -54,7 +54,9 @@ def results(username):
 
 @bp.route('/leaderboard')
 def leaderboard():
-   users = db.session.scalars(sa.select(User)).all()
+   #users = db.session.scalars(sa.select(User)).all()
+
+   users = User.query.order_by(User.score.desc(), User.time_taken.asc()).all()
    return render_template('leaderboard.html', title='Leaderboard', users=users)
 
 @bp.route('/read_csv')

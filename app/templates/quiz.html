@@ -4,6 +4,21 @@
 <script>
 let startTime = Date.now();
 
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return mins + ":" + secs.toString().padStart(2, '0');
+}
+
+function updateTimer() {
+    let now = Date.now();
+    let elapsed = Math.floor((now - startTime) / 1000);
+    document.getElementById("timer").textContent = formatTime(elapsed);
+}
+
+// update every second
+setInterval(updateTimer, 1000);
+
 function submitQuiz() {
     let endTime = Date.now();
     let elapsedTime = (endTime - startTime) / 1000;
@@ -16,6 +31,7 @@ function submitQuiz() {
 </script>
 
   <h1>Test 1</h1>
+  <p>Time: <span id="timer">0:00</span></p>
     <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username) }}">
         {% for q in form.questions %}
             <div class="question-block">

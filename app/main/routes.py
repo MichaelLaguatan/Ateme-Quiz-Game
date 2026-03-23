@@ -1,12 +1,10 @@
 from app.main import bp
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for
 from app.forms import RegistrationForm, QuizForm
 from app.models import User, Questions
 from app import db
 import csv
 import sqlalchemy as sa
-import logging
-from datetime import datetime, timedelta
 
 @bp.route('/', methods=["GET", "POST"])
 @bp.route('/index', methods=["GET", "POST"])
@@ -70,8 +68,6 @@ def read_csv():
             db.session.add(question)
             questions.append((lines[0], lines[1], lines[2], lines[3], lines[4], lines[5]))
     db.session.commit()
-    for question in questions:
-        print(question)
     return questions
 
 @bp.route('/clear_db', methods=["POST"])

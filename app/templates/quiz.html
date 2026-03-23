@@ -39,10 +39,12 @@ function submitQuiz() {
                     <p>{{ (q.form.question_text.label|string)[10:] }} {{ q.form.question_number }}</p>
                     
                     {% for subfield in q.form.options %}
-                        <label>
+                        {% if "null" not in subfield.label.text %}
+                          <label>
                             {{ subfield }}
                             {{ subfield.label.text }}
-                        </label><br>
+                          </label><br>
+                        {% endif %}
                     {% endfor %}
                 </div>
         {% endfor %}

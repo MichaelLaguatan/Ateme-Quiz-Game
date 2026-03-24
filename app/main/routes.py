@@ -1,5 +1,5 @@
 from app.main import bp
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, session
 from app.forms import RegistrationForm, QuizForm, QuizCategoryForm
 from app.models import User, Questions
 from app import db
@@ -37,20 +37,22 @@ def quiz(username, quiz_type):
       db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 2).order_by(func.random()).limit(5)).all()
     case '3':
       db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 3).order_by(func.random()).limit(5)).all()
-  quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
+  quiz_data = [{"id": question.id, "question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
   for q in quiz_data:
     form.questions.append_entry()
   for i, q in enumerate(quiz_data):
     question_form = form.questions[i].form
-    question_form.question_number.data = i
+    question_form.question_number.data = q["id"]
     question_form.question_text.label = q["question"]
     question_form.options.choices = q["choices"]
+  session["question_ids"] = [q.id for q in db_questions]
   return render_template('quiz.html', title='Questions', form=form, username=username, quiz_type=quiz_type)
 
 @bp.route('/results/<username>/<quiz_type>', methods=["GET", "POST"])
 def results(username, quiz_type):
   user = db.session.scalar(sa.select(User).where(User.username == username))
-  db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == quiz_type)).all()
+  question_ids = session.get("question_ids", [])
+  db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == quiz_type, Questions.id.in_(question_ids))).all()
   correct = 0
   results = []
   for key, value in request.form.items():

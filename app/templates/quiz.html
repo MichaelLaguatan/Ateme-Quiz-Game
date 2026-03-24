@@ -1,8 +1,34 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="text-center">
+      <h1>Start!</h1>
+      <p>Time: <span id="timer">0:00</span></p>
+      <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username, quiz_type=quiz_type) }}">
+        <p>{{ form.score }}</p>
+          {% for q in form.questions %}
+            <div class="question-block" style="display:none;">
+              <p>{{ (q.form.question_text.label|string)[10:] }} {{ q.form.question_number }} {{ q.form.correct_option }}</p>
+              {% for subfield in q.form.options %}
+                  {% if "null" not in subfield.label.text %}
+                    <label>
+                      {{ subfield }}
+                      {{ subfield.label.text }}
+                    </label><br>
+                  {% endif %}
+              {% endfor %}
+              <button type="button" class="btn custom-btn next-btn">Next</button>
+            </div>
+          {% endfor %}
+        <input type="hidden" name="time_taken" id="time_taken"><br>
+        <button class="btn custom-btn" id="final-submit" type="button" style="display:none;" onclick="submitQuiz()">Submit</button>
+      </form>
+    </div>
+</div>
 <script>
 let startTime = Date.now();
+let score = 0;
 
 function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
@@ -20,38 +46,53 @@ function updateTimer() {
 setInterval(updateTimer, 1000);
 
 function submitQuiz() {
-    let endTime = Date.now();
-    let elapsedTime = (endTime - startTime) / 1000;
+  let endTime = Date.now();
+  let elapsedTime = (endTime - startTime) / 1000;
 
-    // store in hidden input
-    document.getElementById("time_taken").value = elapsedTime;
-
-    document.getElementById("quizForm").submit();
+  // store in hidden input
+  document.getElementById("time_taken").value = elapsedTime;
+  document.getElementById("quizForm").querySelector('#score').value = score;
+  document.getElementById("quizForm").submit();
 }
+
+let currentQuestion = 0;
+const questions = document.querySelectorAll('.question-block');
+
+function showQuestion(index) {
+  questions.forEach((q, i) => {
+      q.style.display = i === index ? 'block' : 'none';
+  });
+}
+
+// Show first question
+showQuestion(currentQuestion);
+
+// Handle next button clicks
+document.querySelectorAll('.next-btn').forEach((btn, index) => {
+  btn.addEventListener('click', () => {
+      const selected = questions[index].querySelector('input[type="radio"]:checked');
+
+      if (!selected) {
+          alert("Please select an answer!");
+          return;
+      }
+
+      // Check correctness
+      if (selected.value == questions[index].querySelector(`#questions-${index}-correct_option`).value) {
+          alert("Correct.");
+          score++;
+      }
+
+      // Move to next question
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+          showQuestion(currentQuestion);
+      } else {
+          // Show final submit button
+          document.getElementById('final-submit').style.display = 'block';
+          questions[index].style.display = 'none';
+      }
+  });
+});
 </script>
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="text-center">
-        <h1>Start!</h1>
-        <p>Time: <span id="timer">0:00</span></p>
-        <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username, quiz_type=quiz_type) }}">
-            {% for q in form.questions %}
-                <div class="question-block">
-                    <p>{{ (q.form.question_text.label|string)[10:] }} {{ q.form.question_number }}</p>
-                    
-                    {% for subfield in q.form.options %}
-                        {% if "null" not in subfield.label.text %}
-                          <label>
-                            {{ subfield }}
-                            {{ subfield.label.text }}
-                          </label><br>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-        {% endfor %}
-    <input type="hidden" name="time_taken" id="time_taken"><br>
-    <button class="btn custom-btn"type="button" onclick="submitQuiz()">Submit</button>
-    </form>
-    </div>
-</div>
- 
 {% endblock %}

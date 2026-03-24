@@ -6,11 +6,12 @@ from datetime import datetime
 
 class User(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
-    score: so.Mapped[int] = so.mapped_column(sa.Integer, index=True)
-    time_taken: so.Mapped[float] = so.mapped_column(sa.Float, index=True)
-    quiz_type: so.Mapped[int] = so.mapped_column(sa.Integer, index=True)
-    day_taken: so.Mapped[datetime] = so.mapped_column(sa.DateTime, index=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True)
+    email: so.Mapped[str] = so.mapped_column(sa.String(128), index=True)
+    score: so.Mapped[int] = so.mapped_column(sa.Integer, index=True, default=0)
+    time_taken: so.Mapped[float] = so.mapped_column(sa.Float, index=True, default=0)
+    quiz_type: so.Mapped[int] = so.mapped_column(sa.Integer, index=True, default=0)
+    day_taken: so.Mapped[datetime] = so.mapped_column(sa.DateTime, index=True, default=datetime.now())
 
     def __repr__(self):
         return 'User {}'.format(self.username)

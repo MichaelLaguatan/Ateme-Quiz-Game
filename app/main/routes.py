@@ -8,12 +8,14 @@ import sqlalchemy as sa
 from datetime import datetime
 from sqlalchemy import func
 
+QUESTION_AMOUNT = 5
+
 @bp.route('/', methods=["GET", "POST"])
 @bp.route('/index', methods=["GET", "POST"])
 def index():
   form = RegistrationForm()
   if form.validate_on_submit():
-      user = User(username=form.username.data, score=0, time_taken=0, quiz_type=0, day_taken=datetime.now())
+      user = User(username=form.username.data, email=form.email.data)
       db.session.add(user)
       db.session.commit()
       return redirect(url_for('main.quiz_type', username=user.username))
@@ -32,43 +34,37 @@ def quiz(username, quiz_type):
   db_questions = []
   match quiz_type:
     case '1':
-      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 1).order_by(func.random()).limit(5)).all()
+      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 1).order_by(func.random()).limit(QUESTION_AMOUNT)).all()
     case '2':
-      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 2).order_by(func.random()).limit(5)).all()
+      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 2).order_by(func.random()).limit(QUESTION_AMOUNT)).all()
     case '3':
-      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 3).order_by(func.random()).limit(5)).all()
-  quiz_data = [{"id": question.id, "question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
+      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 3).order_by(func.random()).limit(QUESTION_AMOUNT)).all()
+  quiz_data = [{"question": question, 
+              "choices": [("a", question.option1),
+                          ("b", question.option2),
+                          ("c", question.option3),
+                          ("d", question.option4)],
+              "correct_choice": question.correct_option} for question in db_questions]
   for q in quiz_data:
     form.questions.append_entry()
   for i, q in enumerate(quiz_data):
     question_form = form.questions[i].form
-    question_form.question_number.data = q["id"]
+    question_form.question_number.data = i
     question_form.question_text.label = q["question"]
     question_form.options.choices = q["choices"]
-  session["question_ids"] = [q.id for q in db_questions]
+    question_form.correct_option.data = q["correct_choice"]
   return render_template('quiz.html', title='Questions', form=form, username=username, quiz_type=quiz_type)
 
 @bp.route('/results/<username>/<quiz_type>', methods=["GET", "POST"])
 def results(username, quiz_type):
   user = db.session.scalar(sa.select(User).where(User.username == username))
-  question_ids = session.get("question_ids", [])
-  db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == quiz_type, Questions.id.in_(question_ids))).all()
-  correct = 0
-  results = []
-  for key, value in request.form.items():
-    if key.endswith("-question_number") or key == "time_taken":
-      continue
-    results.append(value)
-  for index, value in enumerate(results):
-    if value == db_questions[int(index)].correct_option:
-        correct += 1
-  user.score = correct
+  user.score = request.form.get('score')
   user.time_taken = request.form.get("time_taken")
   user.quiz_type = quiz_type
   user.day_taken = datetime.now()
   db.session.add(user)
   db.session.commit()
-  return render_template('results.html', title='Results', correct=correct, num_questions=len(db_questions), time_taken=user.time_taken)
+  return render_template('results.html', title='Results', correct=request.form.get('score'), num_questions=QUESTION_AMOUNT, time_taken=user.time_taken)
 
 @bp.route('/leaderboard')
 def leaderboard():

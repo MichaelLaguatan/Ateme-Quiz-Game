@@ -33,7 +33,7 @@ function submitQuiz() {
     <div class="text-center">
         <h1>Start!</h1>
         <p>Time: <span id="timer">0:00</span></p>
-        <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username) }}">
+        <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username, quiz_type=quiz_type) }}">
             {% for q in form.questions %}
                 <div class="question-block">
                     <p>{{ (q.form.question_text.label|string)[10:] }} {{ q.form.question_number }}</p>

@@ -27,12 +27,13 @@ def quiz_type(username):
 @bp.route('/quiz/<username>/<quiz_type>')
 def quiz(username, quiz_type):
   form = QuizForm()
+  db_questions = []
   match quiz_type:
-    case 1:
+    case '1':
       db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 1)).all()
-    case 2:
+    case '2':
       db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 2)).all()
-    case 3:
+    case '3':
       db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 3)).all()
   quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
   for q in quiz_data:
@@ -42,12 +43,12 @@ def quiz(username, quiz_type):
     question_form.question_number.data = i
     question_form.question_text.label = q["question"]
     question_form.options.choices = q["choices"]
-  return render_template('quiz.html', title='Questions', form=form, username=username)
+  return render_template('quiz.html', title='Questions', form=form, username=username, quiz_type=quiz_type)
 
-@bp.route('/results/<username>', methods=["GET", "POST"])
-def results(username):
+@bp.route('/results/<username>/<quiz_type>', methods=["GET", "POST"])
+def results(username, quiz_type):
   user = db.session.scalar(sa.select(User).where(User.username == username))
-  db_questions = db.session.scalars(sa.select(Questions)).all()
+  db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == quiz_type)).all()
   correct = 0
   results = []
   for key, value in request.form.items():

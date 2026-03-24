@@ -3,29 +3,116 @@
 {% block content %}
 
 <div class="container mt-5">
-  <h2 class="text-center mb-4">Leaderboard</h2>
+  <h2 class="text-center mb-4">Top 3 overall</h2>
+  <div class="row justify-content-center text-center">
+    {% for user in top_users%}
+    <div class="col-md-3">
+      <div class="card shadow-sm mb-4">
 
-  <div class="table-responsive">
-    <table class="table table-striped table-hover text-center align-middle">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Player</th>
-          <th>Score</th>
-          <th>Time</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for user in users %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.score }}</td>
-          <td>{{ user.time_taken }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        <div class="card-body">
+          <h3>
+            {% if loop.index == 1 %} 1
+            {% elif loop.index == 2 %} 2
+            {% elif loop.index == 3 %} 3
+            {% endif %}
+          </h3>
+
+          <h5 class="card-title">{{ user.username }}</h5>
+
+          <p class="card-text">
+            <strong>Score:</strong> {{ user.score }}<br>
+            <strong>Time:</strong> {{ user.time_taken }}
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+
+
+
+  <div class="row">
+
+    <div class="col-md-4">
+      <h2 class="text-center">Category 1</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover text-center align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th>Score</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in type1_users %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.score }}</td>
+              <td>{{ user.time_taken }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <h2 class="text-center">Category 2</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover text-center align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th>Score</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in type2_users %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.score }}</td>
+              <td>{{ user.time_taken }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <div class="col-md-4">
+      <h2 class="text-center">Category 3</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover text-center align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th>Score</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in type3_users %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.score }}</td>
+              <td>{{ user.time_taken }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 

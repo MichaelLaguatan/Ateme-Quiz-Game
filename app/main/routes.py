@@ -5,13 +5,15 @@ from app.models import User, Questions
 from app import db
 import csv
 import sqlalchemy as sa
+from datetime import datetime
+from sqlalchemy import func
 
 @bp.route('/', methods=["GET", "POST"])
 @bp.route('/index', methods=["GET", "POST"])
 def index():
   form = RegistrationForm()
   if form.validate_on_submit():
-      user = User(username=form.username.data, score=0, time_taken=0)
+      user = User(username=form.username.data, score=0, time_taken=0, quiz_type=0, day_taken=datetime.now())
       db.session.add(user)
       db.session.commit()
       return redirect(url_for('main.quiz_type', username=user.username))
@@ -19,10 +21,10 @@ def index():
 
 @bp.route('/quiz_type/<username>', methods=["GET", "POST"])
 def quiz_type(username):
-   form = QuizCategoryForm()
-   if form.validate_on_submit():
+  form = QuizCategoryForm()
+  if form.validate_on_submit():
       return redirect(url_for('main.quiz', quiz_type=form.categories.data, username=username))
-   return render_template('quiz_type.html', title='Quiz Category', form=form, username=username)
+  return render_template('quiz_type.html', title='Quiz Category', form=form, username=username)
 
 @bp.route('/quiz/<username>/<quiz_type>')
 def quiz(username, quiz_type):
@@ -30,11 +32,11 @@ def quiz(username, quiz_type):
   db_questions = []
   match quiz_type:
     case '1':
-      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 1)).all()
+      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 1).order_by(func.random()).limit(5)).all()
     case '2':
-      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 2)).all()
+      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 2).order_by(func.random()).limit(5)).all()
     case '3':
-      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 3)).all()
+      db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 3).order_by(func.random()).limit(5)).all()
   quiz_data = [{"question": question, "choices": [("a", question.option1), ("b", question.option2), ("c", question.option3), ("d", question.option4)]} for question in db_questions]
   for q in quiz_data:
     form.questions.append_entry()
@@ -53,23 +55,28 @@ def results(username, quiz_type):
   results = []
   for key, value in request.form.items():
     if key.endswith("-question_number") or key == "time_taken":
-       continue
+      continue
     results.append(value)
   for index, value in enumerate(results):
-     if value == db_questions[int(index)].correct_option:
+    if value == db_questions[int(index)].correct_option:
         correct += 1
   user.score = correct
   user.time_taken = request.form.get("time_taken")
+  user.quiz_type = quiz_type
+  user.day_taken = datetime.now()
   db.session.add(user)
   db.session.commit()
   return render_template('results.html', title='Results', correct=correct, num_questions=len(db_questions), time_taken=user.time_taken)
 
 @bp.route('/leaderboard')
 def leaderboard():
-   #users = db.session.scalars(sa.select(User)).all()
+  users = User.query.order_by(User.score.desc(), User.time_taken.asc()).all()
+  type1_users = [u for u in users if u.quiz_type == 1]
+  type2_users = [u for u in users if u.quiz_type == 2]
+  type3_users = [u for u in users if u.quiz_type == 3]
+  top_users = sorted(users, key=lambda u: (-u.score, u.time_taken))[:3]
 
-   users = User.query.order_by(User.score.desc(), User.time_taken.asc()).all()
-   return render_template('leaderboard.html', title='Leaderboard', users=users)
+  return render_template('leaderboard.html', title='Leaderboard', type1_users=type1_users, type2_users=type2_users, type3_users=type3_users, top_users=top_users)
 
 @bp.route('/read_csv')
 def read_csv():

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="text-center">
+        <h1 class="mb-4">Ateme Quiz Game</h1>
+
+        <form action="" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {%for category in form.categories %}
+              {{ category }} {{ category.label }}
+            {% endfor %}<br>
+        </p>
+        <p>
+            {{ form.submit(class_="btn custom-btn") }}
+        </p>
+        
+    </form>
+    </div>
+</div>
+{% endblock %}

@@ -20,6 +20,7 @@ class Questions(db.Model):
     option3: so.Mapped[str] = so.mapped_column(sa.String(128))
     option4: so.Mapped[str] = so.mapped_column(sa.String(128))
     correct_option: so.Mapped[int] = so.mapped_column(sa.Integer)
+    category: so.Mapped[int] = so.mapped_column(sa.Integer)
 
     def __repr__(self):
         return 'Questions {}'.format(self.question)

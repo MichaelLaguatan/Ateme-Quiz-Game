@@ -53,7 +53,7 @@ def quiz(username, quiz_type):
     question_form.question_text.label = q["question"]
     question_form.options.choices = q["choices"]
     question_form.correct_option.data = q["correct_choice"]
-  return render_template('quiz.html', title='Questions', form=form, username=username, quiz_type=quiz_type)
+  return render_template('quiz.jinja2', title='Questions', form=form, username=username, quiz_type=quiz_type)
 
 @bp.route('/results/<username>/<quiz_type>', methods=["GET", "POST"])
 def results(username, quiz_type):

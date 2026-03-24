@@ -3,7 +3,9 @@
 {% block content %}
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="text-center">
-      <h1>Start!</h1>
+    <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+      <div class="progress-bar progress-bar-striped progress-bar-animated" id="progress-bar" style="width: 0%"></div>
+    </div>
       <p>Time: <span id="timer">0:00</span></p>
       <form id="quizForm" method="POST" action="{{ url_for('main.results', username=username, quiz_type=quiz_type) }}">
         <p>{{ form.score }}</p>
@@ -82,9 +84,9 @@ document.querySelectorAll('.next-btn').forEach((btn, index) => {
           alert("Correct.");
           score++;
       }
-
       // Move to next question
       currentQuestion++;
+      document.querySelector('#progress-bar').style.width = (currentQuestion / questions.length) * 100 + '%'
       if (currentQuestion < questions.length) {
           showQuestion(currentQuestion);
       } else {

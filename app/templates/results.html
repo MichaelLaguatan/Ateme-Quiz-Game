@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>RESULTS</h1>
-  You got {{ correct }} out of {{ num_questions }} in {{ time_taken }} seconds
-  <a class="button" href="{{ url_for ('main.index') }}">Back</a>
+<div class="page-wrapper d-flex flex-column justify-content-center align-items-center vh-100">
+  <h1 class="mb-4">Results</h1>
+  <p>You got {{ correct }} out of {{ num_questions }} in {{ time_taken }} seconds</p>
+  <a class="btn custom-btn" href="{{ url_for ('main.index') }}">Back to start</a>
+</div>
 {% endblock %}

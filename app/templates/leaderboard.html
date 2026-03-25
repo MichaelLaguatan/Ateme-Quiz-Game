@@ -2,13 +2,12 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="page-wrapper container mt-5">
   <h2 class="text-center mb-4">Top 3 overall</h2>
   <div class="row justify-content-center text-center">
     {% for user in top_users%}
     <div class="col-md-3">
       <div class="card shadow-sm mb-4">
-
         <div class="card-body">
           <h3>
             {% if loop.index == 1 %} 1

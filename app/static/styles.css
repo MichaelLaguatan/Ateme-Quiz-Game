@@ -1,3 +1,7 @@
+body {
+    padding-top: 70px;
+}
+
 .custom-btn {
     background-color: #2CA95B;
     color: white;
@@ -18,3 +22,49 @@ thead {
     --bs-table-bg: #2CA95B;
     color: white;
 }
+
+.page-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.page-wrapper::before {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    width: 1200px;
+    height: 1200px;
+
+    background: url("images/LOGO-Transparent-big.png") no-repeat center;
+    background-size: contain;
+
+    opacity: 0.15;  
+    z-index: -1;
+}
+
+.progress {
+    background-color: rgb(9, 164, 198, 0.5);
+}
+.custom-progress {
+    background-color: #2CA95B;
+    background-image: repeating-linear-gradient(
+        green 25%,  /* light green */
+        45deg,
+        transparent 25%,
+        transparent 50%,
+        green 50%,
+        green 75%,
+        transparent 75%,
+        transparent
+    );
+
+    background-size: 1rem 1rem;
+}
+
+.custom-navbar {
+    background-color: rgb(44, 169, 91, 0.5);
+}
+

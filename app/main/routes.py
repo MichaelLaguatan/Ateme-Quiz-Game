@@ -65,16 +65,43 @@ def results(username, quiz_type):
   db.session.add(user)
   db.session.commit()
   return render_template('results.html', title='Results', correct=request.form.get('score'), num_questions=QUESTION_AMOUNT, time_taken=user.time_taken)
+"""
+{
+  "March 10": {
+    "1": [
+      "Sally",
+      "Bob"
+    ]
+    "2": [
+      "Emelie"
+    ]
+    "3": []
+  },
+  "March 11": {
+    "1": []
+    "2": []
+    "3": []
+  }
+}
+
+"""
 
 @bp.route('/leaderboard')
 def leaderboard():
   users = User.query.order_by(User.score.desc(), User.time_taken.asc()).all()
-  type1_users = [u for u in users if u.quiz_type == 1]
-  type2_users = [u for u in users if u.quiz_type == 2]
-  type3_users = [u for u in users if u.quiz_type == 3]
+  users_by_day_taken = {}
+  for user in users:
+    if user.quiz_type == 0:
+      continue
+    if str(user.day_taken.day) not in users_by_day_taken:
+      users_by_day_taken[str(user.day_taken.day)] = {'1': [], '2':[], '3':[]}
+    if len(users_by_day_taken[str(user.day_taken.day)][str(user.quiz_type)]) == 10:
+      continue
+    users_by_day_taken[str(user.day_taken.day)][str(user.quiz_type)].append(user)
+  sorted_users_by_day_taken = dict(sorted(users_by_day_taken.items()))
   top_users = sorted(users, key=lambda u: (-u.score, u.time_taken))[:3]
-
-  return render_template('leaderboard.html', title='Leaderboard', type1_users=type1_users, type2_users=type2_users, type3_users=type3_users, top_users=top_users)
+  top_users[0], top_users[1] = top_users[1], top_users[0]
+  return render_template('leaderboard.html', title='Leaderboard', sorted_users_by_day_taken=sorted_users_by_day_taken, top_users=top_users)
 
 @bp.route('/read_csv')
 def read_csv():

@@ -81,7 +81,6 @@ document.querySelectorAll('.next-btn').forEach((btn, index) => {
 
       // Check correctness
       if (selected.value == questions[index].querySelector(`#questions-${index}-correct_option`).value) {
-          alert("Correct.");
           score++;
       }
       // Move to next question

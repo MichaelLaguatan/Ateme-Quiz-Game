@@ -19,5 +19,5 @@ class QuizForm(FlaskForm):
     score = HiddenField()
 
 class QuizCategoryForm(FlaskForm):
-    categories = RadioField(choices=[(1, "Category 1"), (2, "Category 2"), (3, "Category 3")], validators=[DataRequired()])
+    categories = RadioField(choices=[(1, "OTT"), (2, "DAI"), (3, "Encoding")], validators=[DataRequired()])
     submit = SubmitField('Start Quiz!')

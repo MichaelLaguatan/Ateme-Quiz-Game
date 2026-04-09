@@ -107,7 +107,7 @@ def leaderboard():
 def read_csv():
     questions = []
     db.session.query(Questions).delete()
-    files = ["sample_questions_1.csv", "sample_questions_2.csv", "sample_questions_3.csv"]
+    files = ["questions_1.csv", "questions_2.csv", "questions_3.csv"]
     for index, file in enumerate(files):
       with open(file, mode = 'r', encoding='utf-8-sig') as file:
         csvFile = csv.reader(file)

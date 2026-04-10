@@ -32,4 +32,8 @@ To edit the amount of questions used for each quiz, there is the variable `QUEST
 
 ## Clearing the Database
 
-The route `localhost:5000/clear_db` clears the entirety of the database (users and questions) which effectively resets the application. This route is only usuable through `POST` requests which can be sent through Postman
+The route `localhost:5000/clear_db` clears the entirety of the database (users and questions) which effectively resets the application. This route is only usuable through `POST` requests which can be sent through Postman. For the app to work properly, the questions will have to be read from the csv and imported into the database again.
+
+## Contacts Route
+
+The route `localhost:5000/contacts` returns all the users stored in the database in a JSON format. It's first sorted by the quiz type/category, then by day taken in descending order, then by score in descending order, and lastly the time they took to take the quiz in ascending order.

@@ -118,7 +118,7 @@ def read_csv():
 
 @bp.route('/contacts')
 def contacts():
-  users = User.query.order_by(User.day_taken.desc(), User.score.desc(), User.time_taken.asc()).all()
+  users = User.query.order_by(User.quiz_type.desc(), User.day_taken.desc(), User.score.desc(), User.time_taken.asc()).all()
   users_as_dicts = [user.__dict__ for user in users]
   for user in users_as_dicts:
     user.pop('_sa_instance_state', None)

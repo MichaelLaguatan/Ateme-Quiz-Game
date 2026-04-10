@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.jinja2" %}
 
 {% block content %}
 
@@ -72,5 +72,9 @@
           </p>
         `
     }
+
+    setTimeout(() => {
+      location.reload();
+    }, 30000);
 </script>
 {% endblock %}

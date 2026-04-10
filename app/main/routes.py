@@ -18,7 +18,7 @@ def index():
       session['username'] = form.username.data
       session['email'] = form.email.data
       return redirect(url_for('main.quiz_type'))
-  return render_template('index.html', title='Enter Name', form=form)
+  return render_template('index.jinja2', title='Enter Name', form=form)
 
 @bp.route('/quiz_type', methods=["GET", "POST"])
 def quiz_type():
@@ -26,7 +26,7 @@ def quiz_type():
   if form.validate_on_submit():
       session['quiz_type'] = form.categories.data
       return redirect(url_for('main.quiz'))
-  return render_template('quiz_type.html', title='Quiz Category', form=form)
+  return render_template('quiz_type.jinja2', title='Quiz Category', form=form)
 
 @bp.route('/quiz')
 def quiz():
@@ -60,7 +60,7 @@ def results():
   user = User(username=session['username'], email=session['email'], score=request.form.get('score'), time_taken=request.form.get('time_taken'), quiz_type=session['quiz_type'], day_taken=datetime.now())
   db.session.add(user)
   db.session.commit()
-  return render_template('results.html', title='Results', correct=user.score, num_questions=QUESTION_AMOUNT, time_taken=user.time_taken)
+  return render_template('results.jinja2', title='Results', correct=user.score, num_questions=QUESTION_AMOUNT, time_taken=user.time_taken)
 """
 {
   "March 10": {

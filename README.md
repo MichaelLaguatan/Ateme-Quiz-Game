@@ -11,7 +11,7 @@ Here is the Ateme Quiz Game to be used at the NAB trade show
 
 3. Once inside the virtual environment, you can start the flask application:
 
-    `flask run`
+    `flask run --host 0.0.0.0`
 
 4. Any changes should cause the application to restart automatically, but you can restart it by pressing `Ctrl + C` and then re-entering the command to start the flask application    
 

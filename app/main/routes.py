@@ -15,24 +15,24 @@ QUESTION_AMOUNT = 5
 def index():
   form = RegistrationForm()
   if form.validate_on_submit():
-      user = User(username=form.username.data, email=form.email.data)
-      db.session.add(user)
-      db.session.commit()
-      return redirect(url_for('main.quiz_type', username=user.username))
+      session['username'] = form.username.data
+      session['email'] = form.email.data
+      return redirect(url_for('main.quiz_type'))
   return render_template('index.html', title='Enter Name', form=form)
 
-@bp.route('/quiz_type/<username>', methods=["GET", "POST"])
-def quiz_type(username):
+@bp.route('/quiz_type', methods=["GET", "POST"])
+def quiz_type():
   form = QuizCategoryForm()
   if form.validate_on_submit():
-      return redirect(url_for('main.quiz', quiz_type=form.categories.data, username=username))
-  return render_template('quiz_type.html', title='Quiz Category', form=form, username=username)
+      session['quiz_type'] = form.categories.data
+      return redirect(url_for('main.quiz'))
+  return render_template('quiz_type.html', title='Quiz Category', form=form)
 
-@bp.route('/quiz/<username>/<quiz_type>')
-def quiz(username, quiz_type):
+@bp.route('/quiz')
+def quiz():
   form = QuizForm()
   db_questions = []
-  match quiz_type:
+  match session['quiz_type']:
     case '1':
       db_questions = db.session.scalars(sa.select(Questions).where(Questions.category == 1).order_by(func.random()).limit(QUESTION_AMOUNT)).all()
     case '2':
@@ -53,18 +53,14 @@ def quiz(username, quiz_type):
     question_form.question_text.label = q["question"]
     question_form.options.choices = q["choices"]
     question_form.correct_option.data = q["correct_choice"]
-  return render_template('quiz.jinja2', title='Questions', form=form, username=username, quiz_type=quiz_type)
+  return render_template('quiz.jinja2', title='Questions', form=form)
 
-@bp.route('/results/<username>/<quiz_type>', methods=["GET", "POST"])
-def results(username, quiz_type):
-  user = db.session.scalar(sa.select(User).where(User.username == username))
-  user.score = request.form.get('score')
-  user.time_taken = request.form.get("time_taken")
-  user.quiz_type = quiz_type
-  user.day_taken = datetime.now()
+@bp.route('/results', methods=["GET", "POST"])
+def results():
+  user = User(username=session['username'], email=session['email'], score=request.form.get('score'), time_taken=request.form.get('time_taken'), quiz_type=session['quiz_type'], day_taken=datetime.now())
   db.session.add(user)
   db.session.commit()
-  return render_template('results.html', title='Results', correct=request.form.get('score'), num_questions=QUESTION_AMOUNT, time_taken=user.time_taken)
+  return render_template('results.html', title='Results', correct=user.score, num_questions=QUESTION_AMOUNT, time_taken=user.time_taken)
 """
 {
   "March 10": {
@@ -100,8 +96,10 @@ def leaderboard():
     users_by_day_taken[str(user.day_taken.day)][str(user.quiz_type)].append(user)
   sorted_users_by_day_taken = dict(sorted(users_by_day_taken.items()))
   top_users = sorted(users, key=lambda u: (-u.score, u.time_taken))[:3]
-  top_users[0], top_users[1] = top_users[1], top_users[0]
-  return render_template('leaderboard.html', title='Leaderboard', sorted_users_by_day_taken=sorted_users_by_day_taken, top_users=top_users)
+  top_users_as_dicts = [user.__dict__ for user in top_users]
+  for user in top_users_as_dicts:
+    user.pop('_sa_instance_state', None)
+  return render_template('leaderboard.jinja2', title='Leaderboard', sorted_users_by_day_taken=sorted_users_by_day_taken, top_users=top_users_as_dicts)
 
 @bp.route('/read_csv')
 def read_csv():

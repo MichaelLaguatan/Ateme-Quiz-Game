@@ -9,7 +9,7 @@ Here is the Ateme Quiz Game to be used at the NAB trade show
 
     `.\.venv\Scripts\Activate.ps1`
 
-3. Once inside the virtual environment, you can start the flask application:
+3. Once inside the virtual environment, you can start the flask application (the host parameter is necessary for the application to be reachable by other devices):
 
     `flask run --host 0.0.0.0`
 

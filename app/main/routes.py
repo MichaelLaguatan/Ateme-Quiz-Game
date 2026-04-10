@@ -116,6 +116,14 @@ def read_csv():
     db.session.commit()
     return questions
 
+@bp.route('/contacts')
+def contacts():
+  users = User.query.order_by(User.day_taken.desc(), User.score.desc(), User.time_taken.asc()).all()
+  users_as_dicts = [user.__dict__ for user in users]
+  for user in users_as_dicts:
+    user.pop('_sa_instance_state', None)
+  return users_as_dicts
+
 @bp.route('/clear_db', methods=["POST"])
 def clear_db():
   db.drop_all()

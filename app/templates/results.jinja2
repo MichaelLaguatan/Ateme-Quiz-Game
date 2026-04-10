@@ -4,6 +4,6 @@
 <div class="page-wrapper d-flex flex-column justify-content-center align-items-center vh-100">
   <h1 class="mb-4">Results</h1>
   <p>You got {{ correct }} out of {{ num_questions }} in {{ time_taken }} seconds</p>
-  <a class="btn custom-btn" href="{{ url_for ('main.index') }}">Back to start</a>
+  <a class="btn custom-btn" href="{{ url_for ('main.quiz_type') }}">Back to Quiz Selection</a>
 </div>
 {% endblock %}

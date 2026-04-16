@@ -3,16 +3,16 @@
 {% block content %}
 
 <div class="page-wrapper container mt-5">
-  <h2 class="text-center mb-4">Top 3 overall</h2>
+  <h2 class="text-center mb-4">Top 3 Overall</h2>
   <div class="row justify-content-center text-center">
     {% for i in range(3) %}
       <div class="col-md-3">
       <div class="card shadow-sm mb-4">
         <div class="card-body" id="card-{{ i }}">
           <h3>
-            {% if i == 1 %} &#129351
-            {% elif i == 0 %} &#129352
-            {% elif i == 2 %} &#129353
+            {% if i == 0 %} OTT
+            {% elif i == 1 %} DAI
+            {% elif i == 2 %} Encoding
             {% endif %} 
           </h3>
         </div>
@@ -23,7 +23,7 @@
 
   {% for day in sorted_users_by_day_taken %}
     <div class="row">
-      <h3 class="text-center">March {{ day }}</h3>
+      <h3 class="text-center">April {{ day }}</h3>
       {% for quiz_type in sorted_users_by_day_taken[day] %}
       <div class="col-md-4">
         <h2 class="text-center">
@@ -60,10 +60,11 @@
   {% endfor %}
 </div>
 <script>
-    let cards = [document.getElementById("card-1"), document.getElementById("card-0"), document.getElementById("card-2")]
+    let cards = [document.getElementById("card-0"), document.getElementById("card-1"), document.getElementById("card-2")]
     let top_users = {{ top_users | tojson }}
     for (let i = 0; i < top_users.length; i++) {
-        cards[i].innerHTML += `
+      if (top_users[i]["quiz_type"] == 1) {
+        cards[0].innerHTML += `
           <h5 class="card-title">${top_users[i]["username"]}</h5>
 
           <p class="card-text">
@@ -71,6 +72,25 @@
             <strong>Time: ${top_users[i]["time_taken"]}</strong>
           </p>
         `
+      } else if (top_users[i]["quiz_type"] == 2) {
+        cards[1].innerHTML += `
+          <h5 class="card-title">${top_users[i]["username"]}</h5>
+
+          <p class="card-text">
+            <strong>Score: ${top_users[i]["score"]}</strong><br>
+            <strong>Time: ${top_users[i]["time_taken"]}</strong>
+          </p>
+        `
+      } else {
+        cards[2].innerHTML += `
+          <h5 class="card-title">${top_users[i]["username"]}</h5>
+
+          <p class="card-text">
+            <strong>Score: ${top_users[i]["score"]}</strong><br>
+            <strong>Time: ${top_users[i]["time_taken"]}</strong>
+          </p>
+        `
+      }
     }
 
     setTimeout(() => {

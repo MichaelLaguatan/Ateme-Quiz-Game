@@ -7,6 +7,7 @@ import csv
 import sqlalchemy as sa
 from datetime import datetime
 from sqlalchemy import func
+import logging
 
 QUESTION_AMOUNT = 5
 
@@ -95,10 +96,15 @@ def leaderboard():
       continue
     users_by_day_taken[str(user.day_taken.day)][str(user.quiz_type)].append(user)
   sorted_users_by_day_taken = dict(sorted(users_by_day_taken.items()))
-  top_users = sorted(users, key=lambda u: (-u.score, u.time_taken))[:3]
-  top_users_as_dicts = [user.__dict__ for user in top_users]
+  top_users = [
+    User.query.where(User.quiz_type == 1).order_by(User.score.desc(), User.time_taken.asc()).first(),
+    User.query.where(User.quiz_type == 2).order_by(User.score.desc(), User.time_taken.asc()).first(),
+    User.query.where(User.quiz_type == 3).order_by(User.score.desc(), User.time_taken.asc()).first()
+  ]
+  top_users_as_dicts = [user.__dict__ for user in top_users if user != None]
   for user in top_users_as_dicts:
-    user.pop('_sa_instance_state', None)
+    if user != None:
+      user.pop('_sa_instance_state', None)
   return render_template('leaderboard.jinja2', title='Leaderboard', sorted_users_by_day_taken=sorted_users_by_day_taken, top_users=top_users_as_dicts)
 
 @bp.route('/read_csv')
